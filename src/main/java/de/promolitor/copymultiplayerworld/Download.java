@@ -17,12 +17,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.io.FileUtils;
-
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
-
+import org.apache.commons.lang3.ArrayUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -48,6 +47,7 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -92,30 +92,105 @@ public class Download {
 	public static ArrayList<int[]> regionIds;
 	public static int count = 0;
 	public static ArrayList<byte[]> toSend;
+	public static byte[] playerFile;
+	public static byte[] level;
+	public static byte[] thaumcraftFile;
+	public static byte[] baublesFile;
 
 	@SideOnly(Side.SERVER)
-	public static void runDownload(int[] rId) {
+	public static void runDownload(int[] rId, EntityPlayerMP player) {
 		InputStream in = null;
 		byte[] bytes = null;
+
+		// Catch PlayerFile
+		playerFile = getPlayerFile(player.getUniqueID());
+		level = getLevelFile();
+		// Optional
+		thaumcraftFile = getThaumcraftFile(player.getDisplayName());
+		baublesFile = getBaublesFile(player.getDisplayName());
+
 		try {
 			in = new FileInputStream("world/region/r." + rId[0] + "." + rId[1] + ".mca");
 			bytes = IOUtils.toByteArray(in);
-
+			in.close();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			System.out.println("Problems catching Region Files");
 			e.printStackTrace();
 		}
 		toSend = new ArrayList<byte[]>();
-		for (int i = 0; i < bytes.length; i += 64001) {
-			if (i == bytes.length - 1) {
+		for (int i = 0; i < bytes.length; i += 64000) {
+			if (i == bytes.length) {
 				toSend.add(Arrays.copyOfRange(bytes, i, i));
-			} else if (i + 64000 >= bytes.length - 1) {
-				toSend.add(Arrays.copyOfRange(bytes, i, bytes.length - 1));
+			} else if ((i + 64000) >= (bytes.length)) {
+				toSend.add(Arrays.copyOfRange(bytes, i, bytes.length));
 			} else {
 				toSend.add(Arrays.copyOfRange(bytes, i, i + 64000));
 			}
-
 		}
+
+	}
+
+	public static byte[] getPlayerFile(UUID uuid) {
+
+		InputStream in = null;
+		byte[] bytes = null;
+		try {
+			in = new FileInputStream("world/playerdata/" + uuid + ".dat");
+			bytes = IOUtils.toByteArray(in);
+			in.close();
+		} catch (Exception e) {
+			System.out.println("No Playerdata?");
+		}
+
+		return bytes;
+
+	}
+
+	public static byte[] getLevelFile() {
+
+		InputStream in = null;
+		byte[] bytes = null;
+		try {
+			in = new FileInputStream("world/level.dat");
+			bytes = IOUtils.toByteArray(in);
+			in.close();
+		} catch (Exception e) {
+			System.out.println("No Playerdata?");
+		}
+
+		return bytes;
+
+	}
+
+	public static byte[] getThaumcraftFile(String displayName) {
+
+		InputStream in = null;
+		byte[] bytes = null;
+		try {
+			in = new FileInputStream("world/playerdata/" + displayName + ".thaum");
+			bytes = IOUtils.toByteArray(in);
+			in.close();
+		} catch (Exception e) {
+			System.out.println("No Thaumcraft Data?");
+		}
+
+		return bytes;
+
+	}
+
+	public static byte[] getBaublesFile(String displayName) {
+
+		InputStream in = null;
+		byte[] bytes = null;
+		try {
+			in = new FileInputStream("world/playerdata/" + displayName + ".baub");
+			bytes = IOUtils.toByteArray(in);
+			in.close();
+		} catch (Exception e) {
+			System.out.println("No Baubles Data?");
+		}
+
+		return bytes;
 
 	}
 

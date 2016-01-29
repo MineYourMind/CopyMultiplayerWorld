@@ -18,7 +18,7 @@ import de.promolitor.copymultiplayerworld.network.RIdsMessage;
 import de.promolitor.copymultiplayerworld.network.RIdsMessageHandler;
 import de.promolitor.copymultiplayerworld.proxies.CommonProxy;
 
-@Mod(modid = CopyMultiplayerWorld.MODID, version = CopyMultiplayerWorld.VERSION, name = CopyMultiplayerWorld.MODNAME)
+@Mod(modid = CopyMultiplayerWorld.MODID, version = CopyMultiplayerWorld.VERSION, name = CopyMultiplayerWorld.MODNAME, acceptableRemoteVersions = "*")
 public class CopyMultiplayerWorld {
 	public static final String MODID = "cmw";
 	public static final String MODNAME = "Copy Multiplayer World";
@@ -52,7 +52,6 @@ public class CopyMultiplayerWorld {
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
-		DataMessageHandler.fillComparer();
 
 	}
 

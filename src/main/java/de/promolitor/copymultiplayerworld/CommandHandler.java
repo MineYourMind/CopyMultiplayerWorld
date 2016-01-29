@@ -25,6 +25,7 @@ public class CommandHandler extends CommandBase {
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
 		if (args.length == 2) {
 			if (args[0].equals("dl")) {
+				Download.count = 0;
 				Download.getMCAFiles(5, args[1]);
 				return;
 

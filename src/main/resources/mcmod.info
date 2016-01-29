@@ -3,7 +3,7 @@
   "modid": "cmw",
   "name": "Copy Multiplayer World",
   "description": "This mod can be used to save a part of a Multiplayer world to a new Singleplayer World.",
-  "version": "${version}",
+  "version": "1.0",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",

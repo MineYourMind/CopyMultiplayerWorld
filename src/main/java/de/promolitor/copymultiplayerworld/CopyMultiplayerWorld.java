@@ -1,7 +1,7 @@
 package de.promolitor.copymultiplayerworld;
 
-import net.minecraft.init.Blocks;
-import net.minecraftforge.client.ClientCommandHandler;
+import java.util.LinkedHashSet;
+
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -12,10 +12,9 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import de.promolitor.copymultiplayerworld.network.DataMessage;
 import de.promolitor.copymultiplayerworld.network.DataMessageHandler;
-import de.promolitor.copymultiplayerworld.network.RIdsMessage;
-import de.promolitor.copymultiplayerworld.network.RIdsMessageHandler;
 import de.promolitor.copymultiplayerworld.proxies.CommonProxy;
 
 @Mod(modid = CopyMultiplayerWorld.MODID, version = CopyMultiplayerWorld.VERSION, name = CopyMultiplayerWorld.MODNAME, acceptableRemoteVersions = "*")
@@ -26,6 +25,7 @@ public class CopyMultiplayerWorld {
 
 	@Instance(MODID)
 	public static CopyMultiplayerWorld instance;
+	private static Uploader uploader;
 
 	protected static final String CLIENT_PROXY = "de.promolitor.copymultiplayerworld.proxies.ClientProxy";
 	protected static final String SERVER_PROXY = "de.promolitor.copymultiplayerworld.proxies.CommonProxy";
@@ -33,30 +33,25 @@ public class CopyMultiplayerWorld {
 	protected static CommonProxy proxy;
 
 	public static final SimpleNetworkWrapper SNW = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
-
+	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		SNW.registerMessage(DataMessageHandler.class, DataMessage.class, 1, Side.CLIENT);
-		SNW.registerMessage(RIdsMessageHandler.class, RIdsMessage.class, 0, Side.SERVER);
-
-		if (proxy.isServer()) {
-
-		}
-
+		uploader = new Uploader();
+		if (proxy.isServer()) { }
 		if (proxy.isClient()) {
-			ClientCommandHandler.instance.registerCommand(new CommandHandler());
-
+			
 		}
-
 	}
 
 	@EventHandler
-	public void init(FMLInitializationEvent event) {
-
-	}
+	public void init(FMLInitializationEvent event) { }
 
 	@EventHandler
-	public void postInit(FMLPostInitializationEvent event) {
-
+	public void postInit(FMLPostInitializationEvent event) { }
+	
+	@SideOnly(Side.SERVER)
+	public void sendCoords(String uuid, String saveName, LinkedHashSet<int[]> chunkCoords) {
+		uploader.sendCoords(uuid, saveName, chunkCoords);
 	}
 }
